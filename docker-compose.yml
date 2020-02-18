@@ -1,0 +1,25 @@
+version: "3"
+
+services:
+  db-pg:
+    image: postgres:11
+    ports:
+    - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: system
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  liquibase-patch:
+    build: .
+    depends_on:
+      - db-pg
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: system
+      POSTGRES_HOST: db-pg
+      POSTGRES_PORT: 5432
+      POSTGRES_DATABASE: postgres
